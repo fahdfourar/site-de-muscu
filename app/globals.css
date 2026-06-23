@@ -142,6 +142,180 @@ body {
     radial-gradient(ellipse at center, #18181c 0%, #0a0a0b 75%);
 }
 
+/* ════════════════════════════════════════════════
+   PREMIUM EFFECTS — MagicUI-grade, brand-tuned
+   ════════════════════════════════════════════════ */
+
+/* Smooth angle prop for rotating border beams */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Border beam: a light travelling around a rounded border ── */
+.border-beam {
+  position: relative;
+}
+.border-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0%,
+    var(--beam-color, #cdff47) 8%,
+    color-mix(in srgb, var(--beam-color, #cdff47) 60%, #06b6d4) 16%,
+    transparent 28%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: beam-spin 5s linear infinite;
+  pointer-events: none;
+}
+@keyframes beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+/* ── Shimmer sweep across buttons on hover ── */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: none;
+}
+.shimmer:hover::before {
+  animation: shimmer-sweep 0.85s ease;
+}
+@keyframes shimmer-sweep {
+  100% {
+    left: 150%;
+  }
+}
+
+/* ── Continuous shimmer (for premium pills) ── */
+.shimmer-loop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(205, 255, 71, 0.25) 50%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-bg 3.5s linear infinite;
+}
+@keyframes shimmer-bg {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Animated shine text ── */
+.shine-text {
+  background: linear-gradient(
+    110deg,
+    #9a9a93 0%,
+    #9a9a93 40%,
+    #f4f4ef 50%,
+    #9a9a93 60%,
+    #9a9a93 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+@keyframes shine {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Volt button: layered shadow identity ── */
+.btn-volt {
+  background: linear-gradient(180deg, #d8ff5e 0%, #cdff47 100%);
+  color: #0a0a0b;
+  font-weight: 700;
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.4) inset,
+    0 0 0 1px rgba(205, 255, 71, 0.5),
+    0 6px 16px -4px rgba(205, 255, 71, 0.45),
+    0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
+}
+.btn-volt:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.5) inset,
+    0 0 0 1px rgba(205, 255, 71, 0.7),
+    0 12px 32px -6px rgba(205, 255, 71, 0.65),
+    0 4px 8px -2px rgba(0, 0, 0, 0.4);
+}
+.btn-volt:active {
+  transform: translateY(0);
+  box-shadow:
+    0 0 0 1px rgba(205, 255, 71, 0.6),
+    0 3px 10px -4px rgba(205, 255, 71, 0.5);
+}
+
+/* ── Spotlight that follows the cursor (magic card) ── */
+.magic-spot {
+  background: radial-gradient(
+    420px circle at var(--mx) var(--my),
+    color-mix(in srgb, var(--spot, #cdff47) 18%, transparent),
+    transparent 45%
+  );
+}
+
+/* ── Glow ring pulse for badges ── */
+.glow-dot {
+  box-shadow: 0 0 0 0 rgba(205, 255, 71, 0.6);
+  animation: glow-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(205, 255, 71, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(205, 255, 71, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(205, 255, 71, 0);
+  }
+}
+
+/* ── Noise-free conic dial (phase rings etc.) ── */
+.inset-ring {
+  box-shadow: inset 0 0 0 1px rgba(244, 244, 239, 0.06);
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,

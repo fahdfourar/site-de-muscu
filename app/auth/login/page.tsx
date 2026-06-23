@@ -99,7 +99,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl btn-volt disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl btn-volt shimmer disabled:opacity-50"
             >
               {loading ? (
                 <Spinner />

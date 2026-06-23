@@ -91,9 +91,10 @@ export default function PricingPage() {
               )}
 
               <div
+                style={{ ["--beam-color" as string]: "#cdff47" } as React.CSSProperties}
                 className={`h-full flex flex-col rounded-3xl p-8 border ${
                   plan.popular
-                    ? "bg-ink-700 border-volt/40 shadow-volt-sm"
+                    ? "bg-ink-700 border-volt/40 shadow-volt-sm border-beam"
                     : "bg-ink-800 border-ink-line"
                 }`}
               >
@@ -145,7 +146,7 @@ export default function PricingPage() {
                   <button
                     onClick={handleCheckout}
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl btn-volt disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl btn-volt shimmer disabled:opacity-50"
                   >
                     {loading ? (
                       <div className="w-4 h-4 border-2 border-ink-900/30 border-t-ink-900 rounded-full animate-spin" />

@@ -11,10 +11,16 @@ import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import Logo from "./logo";
 
+const NAV = [
+  { label: "Muscles", href: "#", dropdown: true },
+  { label: "Tarifs", href: "/pricing" },
+];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [muscleOpen, setMuscleOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -43,58 +49,79 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-3 sm:px-5 pt-3">
-      <div
+      <motion.div
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "max-w-7xl mx-auto flex items-center justify-between h-14 px-3 sm:px-4 rounded-2xl transition-all duration-300 border",
+          "max-w-7xl mx-auto flex items-center justify-between h-14 pl-4 pr-3 rounded-2xl transition-all duration-300 border",
           scrolled
-            ? "bg-ink-800/80 backdrop-blur-xl border-ink-line shadow-lift"
-            : "bg-transparent border-transparent"
+            ? "bg-ink-800/70 backdrop-blur-2xl border-ink-line shadow-[0_8px_40px_-12px_rgba(0,0,0,0.8),0_1px_0_0_rgba(244,244,239,0.05)_inset]"
+            : "bg-ink-900/20 backdrop-blur-md border-transparent"
         )}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <Logo className="w-8 h-8 transition-transform group-hover:rotate-[-6deg]" />
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+          <motion.div whileHover={{ rotate: -8, scale: 1.05 }} transition={{ type: "spring", stiffness: 400, damping: 15 }}>
+            <Logo className="w-8 h-8" />
+          </motion.div>
           <span className="font-display font-extrabold text-lg tracking-tightest text-bone">
             KINE<span className="text-volt">FORM</span>
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+        {/* Desktop nav with sliding hover indicator */}
+        <div
+          className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2"
+          onMouseLeave={() => setHovered(null)}
+        >
           <div
             className="relative"
-            onMouseEnter={() => setMuscleOpen(true)}
+            onMouseEnter={() => {
+              setMuscleOpen(true);
+              setHovered("Muscles");
+            }}
             onMouseLeave={() => setMuscleOpen(false)}
           >
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-bone-muted hover:text-bone hover:bg-ink-600/50 transition-colors">
+            <button className="relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-bone-muted hover:text-bone transition-colors z-10">
               Muscles
-              <ChevronDown className="w-3.5 h-3.5" />
+              <ChevronDown
+                className={cn("w-3.5 h-3.5 transition-transform", muscleOpen && "rotate-180")}
+              />
             </button>
+            {hovered === "Muscles" && (
+              <motion.div
+                layoutId="nav-hover"
+                className="absolute inset-0 rounded-xl bg-ink-600/60"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+
             <AnimatePresence>
               {muscleOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                  transition={{ duration: 0.16, ease: "easeOut" }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 bg-ink-700 border border-ink-line rounded-2xl shadow-lift p-2"
+                  exit={{ opacity: 0, y: 12, scale: 0.97 }}
+                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[20rem] bg-ink-700/95 backdrop-blur-xl border border-ink-line rounded-2xl shadow-lift p-2.5"
                 >
-                  <p className="eyebrow text-bone-faint px-3 py-2">
-                    08 groupes
+                  <p className="eyebrow text-bone-faint px-3 pt-1 pb-2">
+                    09 groupes — choisis le tien
                   </p>
-                  <div className="grid grid-cols-2 gap-0.5">
+                  <div className="grid grid-cols-2 gap-1">
                     {MUSCLE_GROUPS.map((g) => (
                       <Link
                         key={g.slug}
                         href={`/muscles/${g.slug}`}
                         onClick={() => setMuscleOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-ink-600 transition-colors group"
+                        className="group/item flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-ink-600 transition-colors"
                       >
                         <span
-                          className="w-1.5 h-6 rounded-full flex-shrink-0"
+                          className="w-1.5 h-6 rounded-full flex-shrink-0 transition-all group-hover/item:h-7"
                           style={{ backgroundColor: g.color }}
                         />
-                        <span className="text-bone-muted group-hover:text-bone text-sm font-medium transition-colors">
+                        <span className="text-bone-muted group-hover/item:text-bone text-sm font-medium transition-colors">
                           {g.name}
                         </span>
                       </Link>
@@ -107,19 +134,25 @@ export default function Navbar() {
 
           <Link
             href="/pricing"
+            onMouseEnter={() => setHovered("Tarifs")}
             className={cn(
-              "px-4 py-2 rounded-xl text-sm font-medium transition-colors",
-              pathname === "/pricing"
-                ? "text-bone bg-ink-600/50"
-                : "text-bone-muted hover:text-bone hover:bg-ink-600/50"
+              "relative px-4 py-2 rounded-xl text-sm font-medium transition-colors z-10",
+              pathname === "/pricing" ? "text-bone" : "text-bone-muted hover:text-bone"
             )}
           >
             Tarifs
+            {hovered === "Tarifs" && (
+              <motion.div
+                layoutId="nav-hover"
+                className="absolute inset-0 -z-10 rounded-xl bg-ink-600/60"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
           </Link>
         </div>
 
         {/* Auth */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2 shrink-0">
           {user ? (
             <>
               <Link
@@ -145,10 +178,10 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/auth/signup"
-                className="flex items-center gap-1 btn-volt px-4 py-2 rounded-xl text-sm"
+                className="btn-volt shimmer group flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm"
               >
                 Commencer
-                <ArrowUpRight className="w-4 h-4" />
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
             </>
           )}
@@ -161,16 +194,16 @@ export default function Navbar() {
         >
           {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
-      </div>
+      </motion.div>
 
       {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="md:hidden max-w-7xl mx-auto mt-2 bg-ink-700 border border-ink-line rounded-2xl overflow-hidden shadow-lift"
+            exit={{ opacity: 0, y: -12 }}
+            className="md:hidden max-w-7xl mx-auto mt-2 bg-ink-700/95 backdrop-blur-xl border border-ink-line rounded-2xl overflow-hidden shadow-lift"
           >
             <div className="p-3">
               <p className="eyebrow text-bone-faint px-2 py-2">Muscles</p>
