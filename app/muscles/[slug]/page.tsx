@@ -33,7 +33,7 @@ export default function MusclePage({
   if (!group) notFound();
 
   const [activeExIdx, setActiveExIdx] = useState(0);
-  const [autoRotate, setAutoRotate] = useState(true);
+  const [autoRotate, setAutoRotate] = useState(false);
   const exercise = group.exercises[activeExIdx];
   const otherGroups = MUSCLE_GROUPS.filter((g) => g.slug !== slug).slice(0, 3);
 

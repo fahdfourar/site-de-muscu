@@ -530,7 +530,7 @@ function repBlend(p: number) {
 }
 
 const BONES: [string, string][] = [
-  ["neck", "head"], ["hip", "neck"],
+  ["neck", "head"],
   ["shoulderL", "shoulderR"],
   ["shoulderL", "elbowL"], ["elbowL", "wristL"],
   ["shoulderR", "elbowR"], ["elbowR", "wristR"],
@@ -549,7 +549,7 @@ function Figure({ type }: { type: string }) {
 
   useFrame((_, dt) => {
     t.current += dt;
-    const period = 3.4;
+    const period = 4.6;
     const p = (t.current % period) / period;
     const m = repBlend(p);
     if (def.alt) {
@@ -568,15 +568,23 @@ function Figure({ type }: { type: string }) {
   });
 
   const j = joints;
-  const heads: string[] = ["head"];
+  const jointKeys = ["shoulderL", "shoulderR", "elbowL", "elbowR", "wristL", "wristR", "hipL", "hipR", "kneeL", "kneeR", "ankleL", "ankleR"];
 
   return (
     <group>
+      {/* torso volume — reads as a body, not just sticks */}
+      <Tube a={j.hip} b={j.neck} r={0.135} color={LIMB} />
+      <Ball pos={j.hip} r={0.14} color={LIMB} />
+      <Ball pos={j.neck} r={0.1} color={LIMB} />
+      {/* limbs */}
       {BONES.map(([x, y]) => (
-        <Tube key={`${x}-${y}`} a={j[x]} b={j[y]} r={x === "shoulderL" && y === "shoulderR" ? 0.05 : 0.052} />
+        <Tube key={`${x}-${y}`} a={j[x]} b={j[y]} r={0.057} />
       ))}
-      {Object.keys(j).map((k) => (
-        <Ball key={k} pos={j[k]} r={heads.includes(k) ? 0.13 : 0.062} color={heads.includes(k) ? LIMB : JOINT} />
+      {/* head */}
+      <Ball pos={j.head} r={0.14} color={LIMB} />
+      {/* joints */}
+      {jointKeys.map((k) => (
+        <Ball key={k} pos={j[k]} r={0.062} color={JOINT} />
       ))}
       <HeldImplement type={type} j={j} />
     </group>
@@ -821,24 +829,35 @@ function Equipment({ type }: { type: string }) {
 /* ════════════════════════════════════════════════════════════
    Camera framing per stance
    ════════════════════════════════════════════════════════════ */
-function cameraFor(stance: Stance): { pos: V3; target: V3 } {
+function cameraFor(type: string, stance: Stance): { pos: V3; target: V3 } {
+  // Frontal-plane moves read best from the FRONT
+  const frontal = ["lateral-raise", "face-pull", "pull-up", "sumo-squat"];
+  if (frontal.includes(type)) {
+    if (type === "pull-up") return { pos: [0.3, 1.1, 3.6], target: [0, 0.95, 0] };
+    return { pos: [0.2, 1.2, 3.5], target: [0, 1.2, 0] };
+  }
+  // Sagittal-plane moves read best from the SIDE (profile)
+  const sagittal = [
+    "barbell-curl", "dumbbell-curl", "hammer-curl", "tricep-pushdown",
+    "overhead-press", "overhead-tricep", "squat", "rdl", "good-morning", "lunge",
+  ];
+  if (sagittal.includes(type)) return { pos: [3.4, 1.25, 0.9], target: [0, 1.05, 0] };
+
   switch (stance) {
     case "lie":
-      return { pos: [2.6, 1.5, 2.8], target: [0, 0.6, 0] };
+      return { pos: [3.0, 1.35, 1.7], target: [0, 0.6, 0] };
     case "floor":
-      return { pos: [2.4, 1.3, 2.6], target: [0, 0.3, 0.1] };
+      return { pos: [3.0, 1.1, 1.2], target: [0, 0.3, 0.15] };
     case "support":
-      return { pos: [2.6, 1.2, 2.4], target: [0, 0.4, 0.1] };
-    case "hang":
-      return { pos: [0.4, 1.0, 3.4], target: [0, 0.9, 0] };
+      return { pos: [3.0, 1.05, 1.5], target: [0, 0.4, 0.1] };
     case "prone":
-      return { pos: [2.6, 1.4, 2.6], target: [0, 0.6, -0.1] };
+      return { pos: [3.0, 1.3, 1.4], target: [0, 0.6, -0.1] };
     case "seat":
-      return { pos: [2.4, 1.3, 3.0], target: [0, 0.9, 0] };
+      return { pos: [3.0, 1.25, 2.0], target: [0, 0.85, 0] };
     case "bent":
-      return { pos: [2.2, 1.2, 3.0], target: [0, 0.8, 0.1] };
+      return { pos: [2.8, 1.2, 2.2], target: [0, 0.85, 0.1] };
     default:
-      return { pos: [0.6, 1.1, 3.6], target: [0, 1.0, 0] };
+      return { pos: [2.6, 1.2, 2.6], target: [0, 1.0, 0] };
   }
 }
 
@@ -887,7 +906,7 @@ export default function ExerciseViewer3D({
   accent?: string;
 }) {
   const def = getDef(exercise.animationType);
-  const cam = cameraFor(def.stance);
+  const cam = cameraFor(exercise.animationType, def.stance);
 
   return (
     <div className="w-full h-full">
