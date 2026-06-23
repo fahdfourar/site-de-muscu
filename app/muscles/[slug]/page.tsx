@@ -110,7 +110,7 @@ export default function MusclePage({
           >
             <div className="scene-bg h-[440px] sm:h-[540px] relative tick-corners">
               <Suspense fallback={<CanvasFallback />}>
-                <ExerciseViewer3D exercise={exercise} autoRotate={autoRotate} />
+                <ExerciseViewer3D exercise={exercise} autoRotate={autoRotate} accent={group.color} />
               </Suspense>
 
               {/* top bar */}
