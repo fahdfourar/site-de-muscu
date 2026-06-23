@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Zap, ArrowRight } from "lucide-react";
+import { Check, ArrowUpRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 
 const stripePromise = loadStripe(
@@ -13,33 +14,31 @@ const PLANS = [
   {
     id: "free",
     name: "Starter",
-    price: 0,
-    description: "Pour découvrir KINEFORM",
-    color: "#06B6D4",
+    price: "0",
+    period: "pour toujours",
+    description: "Pour découvrir la méthode",
     features: [
       "3 groupes musculaires",
       "Animations 3D interactives",
       "Instructions étape par étape",
       "Erreurs courantes",
     ],
-    locked: ["Pectoraux, Dos, Quadriceps uniquement"],
   },
   {
     id: "pro",
     name: "Pro",
-    price: 9.99,
-    description: "Accès complet à tout KINEFORM",
-    color: "#7C3AED",
+    price: "9,99",
+    period: "/ mois",
+    description: "Accès total au labo",
     popular: true,
     features: [
-      "8 groupes musculaires complets",
-      "24 exercices avec animations 3D HD",
-      "Phases détaillées de chaque exercice",
-      "Erreurs courantes + corrections",
+      "9 groupes musculaires complets",
+      "27 exercices en 3D HD",
+      "Phases détaillées de chaque mouvement",
+      "Erreurs + corrections illustrées",
       "Progression sauvegardée",
       "Nouveaux exercices chaque mois",
     ],
-    locked: [],
   },
 ];
 
@@ -56,29 +55,25 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-primary pt-16">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-64 rounded-full bg-accent-purple/8 blur-[120px]" />
-      </div>
+    <div className="min-h-screen bg-ink-900 pt-28 bp-dots">
+      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-volt-glow pointer-events-none" />
 
-      <div className="max-w-4xl mx-auto px-4 py-20">
+      <div className="max-w-5xl mx-auto px-5 pb-24 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <p className="text-xs text-accent-purple font-mono uppercase tracking-wider mb-3">
-            Tarifs
-          </p>
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-4">
-            Simple et transparent
+          <p className="eyebrow text-volt mb-4">// Tarifs</p>
+          <h1 className="font-display font-extrabold text-5xl sm:text-6xl text-bone tracking-tightest mb-4">
+            Simple. Honnête.
           </h1>
-          <p className="text-white/50 text-lg max-w-xl mx-auto">
-            Commence gratuitement, passe Pro quand tu veux.
+          <p className="text-bone-muted text-lg max-w-md mx-auto">
+            Commence gratuitement. Passe Pro quand tu es prêt. Annule quand tu veux.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
           {PLANS.map((plan, i) => (
             <motion.div
               key={plan.id}
@@ -88,99 +83,87 @@ export default function PricingPage() {
               className="relative"
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                  <span className="px-4 py-1 rounded-full bg-gradient-to-r from-accent-purple to-accent-cyan text-white text-xs font-bold">
-                    Le plus populaire
+                <div className="absolute -top-3 left-8 z-10">
+                  <span className="font-mono text-[11px] uppercase tracking-widest px-3 py-1 rounded-full bg-volt text-ink-900 font-bold">
+                    Recommandé
                   </span>
                 </div>
               )}
 
               <div
-                className="bg-bg-card border rounded-3xl p-8 h-full flex flex-col"
-                style={{
-                  borderColor: plan.popular
-                    ? `${plan.color}50`
-                    : "rgba(255,255,255,0.08)",
-                  boxShadow: plan.popular
-                    ? `0 0 40px ${plan.color}15`
-                    : "none",
-                }}
+                className={`h-full flex flex-col rounded-3xl p-8 border ${
+                  plan.popular
+                    ? "bg-ink-700 border-volt/40 shadow-volt-sm"
+                    : "bg-ink-800 border-ink-line"
+                }`}
               >
-                {plan.popular && (
-                  <div
-                    className="absolute inset-0 rounded-3xl opacity-5"
-                    style={{
-                      background: `radial-gradient(circle at 50% 0%, ${plan.color}, transparent 70%)`,
-                    }}
-                  />
-                )}
+                <div className="flex-1">
+                  <h2 className="font-display font-bold text-2xl text-bone mb-1">
+                    {plan.name}
+                  </h2>
+                  <p className="text-bone-muted text-sm mb-6">{plan.description}</p>
 
-                <div className="relative z-10 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div
-                      className="w-7 h-7 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: `${plan.color}20` }}
-                    >
-                      <Zap className="w-3.5 h-3.5" style={{ color: plan.color }} />
-                    </div>
-                    <h2 className="text-white font-bold text-lg">{plan.name}</h2>
-                  </div>
-
-                  <div className="flex items-baseline gap-1 mt-4 mb-2">
-                    <span className="text-4xl font-black text-white">
-                      {plan.price === 0 ? "Gratuit" : `${plan.price}€`}
+                  <div className="flex items-baseline gap-1.5 mb-8">
+                    <span className="font-display font-extrabold text-5xl text-bone tracking-tight">
+                      {plan.price === "0" ? "Gratuit" : `${plan.price}€`}
                     </span>
-                    {plan.price > 0 && (
-                      <span className="text-white/40 text-sm">/mois</span>
+                    {plan.price !== "0" && (
+                      <span className="text-bone-faint text-sm font-mono">
+                        {plan.period}
+                      </span>
                     )}
                   </div>
-                  <p className="text-white/50 text-sm mb-6">{plan.description}</p>
 
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-3.5 mb-8">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5">
-                        <Check
-                          className="w-4 h-4 flex-shrink-0 mt-0.5"
-                          style={{ color: plan.color }}
-                        />
-                        <span className="text-white/80 text-sm">{f}</span>
+                      <li key={f} className="flex items-start gap-3">
+                        <span
+                          className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                            plan.popular ? "bg-volt" : "bg-ink-600"
+                          }`}
+                        >
+                          <Check
+                            className={`w-3 h-3 ${
+                              plan.popular ? "text-ink-900" : "text-volt"
+                            }`}
+                          />
+                        </span>
+                        <span className="text-bone-muted text-sm">{f}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="relative z-10">
-                  {plan.id === "free" ? (
-                    <a
-                      href="/"
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/15 text-white/70 hover:bg-white/5 transition-colors font-semibold text-sm"
-                    >
-                      Commencer gratuitement
-                    </a>
-                  ) : (
-                    <button
-                      onClick={handleCheckout}
-                      disabled={loading}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan text-white font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      {loading ? (
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          Passer Pro
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+                {plan.id === "free" ? (
+                  <Link
+                    href="/auth/signup"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl border border-ink-line text-bone font-semibold hover:bg-ink-600 transition-colors"
+                  >
+                    Commencer gratuitement
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleCheckout}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl btn-volt disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <div className="w-4 h-4 border-2 border-ink-900/30 border-t-ink-900 rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        Passer Pro
+                        <ArrowUpRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </motion.div>
           ))}
         </div>
 
-        <p className="text-center text-white/30 text-sm mt-10">
-          Paiement sécurisé par Stripe · Annulation à tout moment · Pas d&apos;engagement
+        <p className="text-center font-mono text-xs text-bone-faint mt-10">
+          Paiement sécurisé par Stripe · Sans engagement
         </p>
       </div>
     </div>

@@ -1,17 +1,23 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-bg-primary flex items-center justify-center text-center px-4">
+    <div className="min-h-screen bg-ink-900 flex items-center justify-center text-center px-5 bp-grid">
       <div>
-        <p className="text-8xl mb-6">💪</p>
-        <h2 className="text-2xl font-bold text-white mb-2">Groupe musculaire introuvable</h2>
-        <p className="text-white/50 mb-6">Ce groupe musculaire n&apos;existe pas encore.</p>
+        <p className="font-display font-extrabold text-8xl text-volt tracking-tightest mb-4">
+          404
+        </p>
+        <h2 className="font-display font-bold text-2xl text-bone mb-2">
+          Groupe musculaire introuvable
+        </h2>
+        <p className="text-bone-muted mb-8">Ce groupe n&apos;existe pas (encore).</p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan text-white font-bold hover:opacity-90"
+          className="inline-flex items-center gap-2 btn-volt px-6 py-3 rounded-xl"
         >
           Retour à l&apos;accueil
+          <ArrowUpRight className="w-4 h-4" />
         </Link>
       </div>
     </div>

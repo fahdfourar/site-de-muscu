@@ -2,135 +2,163 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { Zap, Play, ArrowRight, Box, List, ShieldCheck } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowUpRight, Box, Layers, ShieldCheck, MousePointerClick } from "lucide-react";
 import MuscleCard from "@/components/muscle-card";
 import { MUSCLE_GROUPS } from "@/data/exercises";
 
+const MARQUEE = [
+  "DÉVELOPPÉ COUCHÉ",
+  "SQUAT",
+  "TRACTIONS",
+  "SOULEVÉ DE TERRE",
+  "DÉVELOPPÉ MILITAIRE",
+  "DIPS",
+  "HIP THRUST",
+  "CURL BARRE",
+];
+
 export default function HomePage() {
-  const gridRef = useRef(null);
-  const featRef = useRef(null);
-  const gridInView = useInView(gridRef, { once: true, margin: "-100px" });
-  const featInView = useInView(featRef, { once: true, margin: "-100px" });
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const yTitle = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <div className="min-h-screen bg-bg-primary">
-      {/* ── Hero ── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
-        {/* Background orbs */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-accent-purple/10 blur-[120px]" />
-          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-accent-cyan/10 blur-[100px]" />
-        </div>
+    <div className="bg-ink-900">
+      {/* ───────────────── HERO ───────────────── */}
+      <section
+        ref={heroRef}
+        className="relative min-h-screen flex flex-col justify-center overflow-hidden bp-grid pt-28 pb-16"
+      >
+        {/* volt glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-volt-glow pointer-events-none" />
 
-        {/* Grid lines bg */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(124,58,237,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.5) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-
-        <div className="relative z-10 text-center max-w-4xl mx-auto">
+        <motion.div
+          style={{ y: yTitle, opacity }}
+          className="relative z-10 max-w-7xl mx-auto px-5 w-full"
+        >
+          {/* Eyebrow */}
           <motion.div
-            initial={{ opacity: 0, y: -16 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-purple/30 bg-accent-purple/10 mb-8"
+            className="flex items-center gap-3 mb-8"
           >
-            <Zap className="w-3.5 h-3.5 text-accent-purple" />
-            <span className="text-xs text-accent-purple font-semibold tracking-wider uppercase">
-              Musculation pour débutants
+            <span className="flex items-center gap-2 eyebrow text-volt">
+              <span className="w-2 h-2 rounded-full bg-volt animate-pulse" />
+              Le labo du mouvement
             </span>
+            <span className="h-px flex-1 max-w-[120px] bg-ink-line" />
+            <span className="eyebrow text-bone-faint">v.2026</span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl sm:text-7xl font-black text-white leading-tight mb-6"
-          >
-            Maîtrise{" "}
-            <span className="gradient-text">chaque rep.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-white/60 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
-          >
-            Des animations 3D interactives pour apprendre la technique parfaite
-            dès ta première séance. Simple, clair, efficace.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="#muscles"
-              className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan text-white font-bold text-base hover:opacity-90 transition-opacity glow-purple"
+          {/* Massive headline */}
+          <h1 className="display-hero text-bone text-[clamp(2.25rem,8vw,7.5rem)] break-words">
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.05 }}
+              className="block"
             >
-              <Zap className="w-4 h-4" />
-              Commencer gratuitement
-            </Link>
-            <Link
-              href="/muscles/pectoraux"
-              className="flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-white/80 font-semibold text-base hover:border-white/30 hover:text-white transition-all"
+              PERFECTIONNE
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="block"
             >
-              <Play className="w-4 h-4" />
-              Voir une démo
-            </Link>
-          </motion.div>
+              CHAQUE{" "}
+              <span className="text-volt italic">mouvement.</span>
+            </motion.span>
+          </h1>
 
-          {/* Social proof */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-16 flex items-center justify-center gap-8 text-white/30 text-sm"
-          >
-            <span>✦ 8 groupes musculaires</span>
-            <span>✦ Animations 3D interactives</span>
-            <span>✦ Gratuit pour commencer</span>
-          </motion.div>
-        </div>
+          {/* Sub + CTA row */}
+          <div className="mt-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-bone-muted text-lg max-w-md leading-relaxed"
+            >
+              Des animations <span className="text-bone">3D interactives</span> qui
+              te montrent exactement comment exécuter chaque exercice. Conçu pour
+              ceux qui débutent.
+            </motion.p>
 
-        {/* Scroll indicator */}
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/20"
-        >
-          <div className="w-6 h-10 rounded-full border border-white/20 flex items-start justify-center pt-2">
-            <div className="w-1 h-2 rounded-full bg-white/40" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-col sm:flex-row gap-3"
+            >
+              <Link
+                href="#muscles"
+                className="flex items-center justify-center gap-2 btn-volt px-7 py-4 rounded-2xl text-base"
+              >
+                Choisir un muscle
+                <ArrowUpRight className="w-5 h-5" />
+              </Link>
+              <Link
+                href="/muscles/pectoraux"
+                className="flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-ink-line text-bone font-semibold hover:bg-ink-700 hover:border-ink-500 transition-all"
+              >
+                <MousePointerClick className="w-4 h-4 text-volt" />
+                Voir une démo 3D
+              </Link>
+            </motion.div>
           </div>
+        </motion.div>
+
+        {/* Scroll cue */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
+        >
+          <span className="eyebrow text-bone-faint">scroll</span>
+          <div className="w-px h-8 bg-gradient-to-b from-volt to-transparent animate-scan" />
         </motion.div>
       </section>
 
-      {/* ── Muscle grid ── */}
-      <section id="muscles" className="py-24 px-4" ref={gridRef}>
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={gridInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-14"
-          >
-            <p className="text-xs text-accent-cyan font-mono uppercase tracking-wider mb-3">
-              Groupes musculaires
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">
-              Quel muscle veux-tu travailler ?
-            </h2>
-          </motion.div>
+      {/* ───────────────── MARQUEE ───────────────── */}
+      <div className="border-y border-ink-line py-4 overflow-hidden bg-ink-800">
+        <div className="marquee-track items-center gap-8">
+          {[...MARQUEE, ...MARQUEE].map((w, i) => (
+            <div key={i} className="flex items-center gap-8 shrink-0">
+              <span className="font-display font-bold text-2xl text-bone-faint whitespace-nowrap">
+                {w}
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-volt" />
+            </div>
+          ))}
+        </div>
+      </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* ───────────────── MUSCLE GRID ───────────────── */}
+      <section id="muscles" className="py-24 px-5 relative bp-dots">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <p className="eyebrow text-volt mb-3">// Bibliothèque</p>
+              <h2 className="font-display font-extrabold text-bone text-4xl sm:text-5xl tracking-tightest">
+                Quel muscle
+                <br />
+                aujourd&apos;hui ?
+              </h2>
+            </div>
+            <p className="text-bone-muted max-w-xs text-sm leading-relaxed">
+              Les 9 groupes musculaires les plus travaillés. Choisis-en un, regarde
+              le mouvement, reproduis-le.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {MUSCLE_GROUPS.map((group, i) => (
               <MuscleCard key={group.slug} group={group} index={i} />
             ))}
@@ -138,94 +166,115 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
-      <section className="py-24 px-4" ref={featRef}>
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
+      {/* ───────────────── FEATURES ───────────────── */}
+      <section className="py-24 px-5 border-t border-ink-line">
+        <div className="max-w-7xl mx-auto">
+          <p className="eyebrow text-volt mb-3">// Méthode</p>
+          <h2 className="font-display font-extrabold text-bone text-4xl sm:text-5xl tracking-tightest mb-14 max-w-2xl">
+            Apprendre vite, sans se blesser.
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-px bg-ink-line rounded-3xl overflow-hidden border border-ink-line">
             {[
               {
+                n: "01",
                 icon: <Box className="w-6 h-6" />,
-                color: "#7C3AED",
-                title: "Visualise le mouvement",
-                desc: "Animations 3D interactives que tu peux faire pivoter. Vois chaque phase du mouvement clairement.",
+                title: "Visualise en 3D",
+                desc: "Une animation que tu peux faire tourner à 360°. Vois chaque angle, chaque phase du mouvement.",
               },
               {
-                icon: <List className="w-6 h-6" />,
-                color: "#06B6D4",
-                title: "Étape par étape",
-                desc: "Instructions claires en 4 étapes max. Adaptées aux débutants, sans jargon technique.",
+                n: "02",
+                icon: <Layers className="w-6 h-6" />,
+                title: "Suis les étapes",
+                desc: "4 étapes maximum, sans jargon. Clique sur une étape pour comprendre exactement quoi faire.",
               },
               {
+                n: "03",
                 icon: <ShieldCheck className="w-6 h-6" />,
-                color: "#10B981",
-                title: "Évite les blessures",
-                desc: "Les erreurs les plus courantes sont listées avec leur correction. Apprends à faire juste dès le départ.",
+                title: "Évite les erreurs",
+                desc: "Les fautes classiques de débutant et leur correction, listées pour chaque exercice.",
               },
             ].map((f, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 24 }}
-                animate={featInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: i * 0.12 }}
-                className="bg-bg-card border border-white/8 rounded-2xl p-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="bg-ink-800 p-8 hover:bg-ink-700 transition-colors group"
               >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ backgroundColor: `${f.color}20`, color: f.color }}
-                >
-                  {f.icon}
+                <div className="flex items-center justify-between mb-6">
+                  <span className="font-mono text-sm text-bone-faint">{f.n}</span>
+                  <div className="w-11 h-11 rounded-xl bg-volt/10 text-volt flex items-center justify-center group-hover:bg-volt group-hover:text-ink-900 transition-colors">
+                    {f.icon}
+                  </div>
                 </div>
-                <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{f.desc}</p>
+                <h3 className="font-display font-bold text-xl text-bone mb-2">
+                  {f.title}
+                </h3>
+                <p className="text-bone-muted text-sm leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA Pro ── */}
-      <section className="py-24 px-4">
-        <div className="max-w-3xl mx-auto">
+      {/* ───────────────── CTA ───────────────── */}
+      <section className="py-24 px-5">
+        <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-3xl overflow-hidden border border-accent-purple/20 p-10 text-center"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(6,182,212,0.08) 100%)",
-            }}
+            className="relative rounded-[2rem] overflow-hidden bg-volt p-10 sm:p-16 tick-corners"
           >
-            <div className="absolute inset-0 bg-gradient-hero opacity-5" />
-            <div className="relative z-10">
-              <p className="text-xs text-accent-purple font-mono uppercase tracking-wider mb-3">
-                KINEFORM PRO
-              </p>
-              <h2 className="text-3xl font-black text-white mb-4">
-                Débloque tous les muscles
-              </h2>
-              <p className="text-white/60 mb-8 max-w-md mx-auto">
-                Accès complet aux 8 groupes musculaires, HD animations, phases
-                détaillées et progression sauvegardée.
-              </p>
+            <div
+              className="absolute inset-0 opacity-[0.07]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(#0a0a0b 1px, transparent 1px), linear-gradient(90deg, #0a0a0b 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div>
+                <p className="font-mono text-xs text-ink-900/60 tracking-widest uppercase mb-4">
+                  Gratuit pour commencer
+                </p>
+                <h2 className="font-display font-extrabold text-ink-900 text-4xl sm:text-6xl tracking-tightest leading-[0.95]">
+                  Prêt à bien
+                  <br />
+                  débuter ?
+                </h2>
+              </div>
               <Link
-                href="/pricing"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan text-white font-bold hover:opacity-90 transition-opacity"
+                href="/auth/signup"
+                className="group flex items-center gap-3 bg-ink-900 text-bone px-8 py-5 rounded-2xl font-bold text-lg hover:bg-ink-800 transition-colors self-start lg:self-auto"
               >
-                Voir les tarifs
-                <ArrowRight className="w-4 h-4" />
+                Créer mon compte
+                <ArrowUpRight className="w-6 h-6 text-volt transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-8 px-4 text-center">
-        <p className="text-white/30 text-sm">
-          © 2025 KINEFORM — Maîtrise chaque rep.
-        </p>
+      {/* ───────────────── FOOTER ───────────────── */}
+      <footer className="border-t border-ink-line py-10 px-5">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="font-display font-extrabold text-bone tracking-tight">
+              KINE<span className="text-volt">FORM</span>
+            </span>
+            <span className="font-mono text-xs text-bone-faint">
+              — Le labo du mouvement
+            </span>
+          </div>
+          <p className="font-mono text-xs text-bone-faint">
+            © 2026 · Perfectionne chaque mouvement
+          </p>
+        </div>
       </footer>
     </div>
   );

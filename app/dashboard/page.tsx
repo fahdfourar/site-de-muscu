@@ -2,90 +2,92 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { MUSCLE_GROUPS } from "@/data/exercises";
-import { Zap, ArrowRight, User } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login");
 
-  const name = user.user_metadata?.full_name ?? user.email?.split("@")[0] ?? "Athlète";
+  const name =
+    user.user_metadata?.full_name ?? user.email?.split("@")[0] ?? "Athlète";
 
   return (
-    <div className="min-h-screen bg-bg-primary pt-16">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+    <div className="min-h-screen bg-ink-900 pt-28 bp-dots">
+      <div className="max-w-6xl mx-auto px-5 pb-20">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-full bg-accent-purple/20 flex items-center justify-center">
-                <User className="w-5 h-5 text-accent-purple" />
-              </div>
-              <div>
-                <p className="text-white/50 text-sm">Bonjour,</p>
-                <h1 className="text-2xl font-bold text-white">{name}</h1>
-              </div>
-            </div>
+            <p className="eyebrow text-volt mb-3">// Ton espace</p>
+            <h1 className="font-display font-extrabold text-5xl text-bone tracking-tightest">
+              Salut, {name}.
+            </h1>
+            <p className="text-bone-muted mt-2">
+              Choisis un muscle et reprends ton entraînement.
+            </p>
           </div>
-
           <Link
             href="/pricing"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan text-white text-sm font-bold hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 btn-volt px-5 py-3 rounded-xl self-start"
           >
-            <Zap className="w-3.5 h-3.5" />
+            <Sparkles className="w-4 h-4" />
             Passer Pro
           </Link>
         </div>
 
         {/* Muscle grid */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-white mb-4">
-            Tes exercices
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {MUSCLE_GROUPS.map((group) => (
-              <Link
-                key={group.slug}
-                href={`/muscles/${group.slug}`}
-                className="group bg-bg-card border border-white/8 rounded-2xl p-5 hover:border-white/15 transition-all hover:scale-[1.02]"
-              >
-                <div
-                  className="w-2 h-2 rounded-full mb-3"
-                  style={{ backgroundColor: group.color }}
-                />
-                <h3 className="text-white font-semibold text-sm mb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+          {MUSCLE_GROUPS.map((group, i) => (
+            <Link
+              key={group.slug}
+              href={`/muscles/${group.slug}`}
+              className="group relative bg-ink-700 border border-ink-line rounded-2xl p-5 hover:border-ink-500 transition-all overflow-hidden"
+            >
+              <div
+                className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full"
+                style={{ backgroundColor: group.color }}
+              />
+              <div className="pl-3">
+                <span className="font-mono text-[11px] text-bone-faint">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-display font-bold text-bone mt-3 mb-1">
                   {group.name}
                 </h3>
-                <p className="text-white/40 text-xs mb-3">
-                  {group.exercises.length} exercices
+                <p className="font-mono text-[11px] text-bone-faint mb-3">
+                  {group.exercises.length} exos
                 </p>
-                <ArrowRight
-                  className="w-4 h-4 text-white/20 group-hover:text-white/60 group-hover:translate-x-1 transition-all"
+                <ArrowUpRight
+                  className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                   style={{ color: group.color }}
                 />
-              </Link>
-            ))}
-          </div>
+              </div>
+            </Link>
+          ))}
         </div>
 
-        {/* Pro upsell */}
-        <div className="bg-bg-card border border-accent-purple/20 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        {/* Plan strip */}
+        <div className="bg-ink-700 border border-ink-line rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-accent-purple" />
-              <span className="text-white font-bold">Plan actuel : Starter</span>
+              <span className="font-mono text-xs px-2 py-0.5 rounded bg-ink-600 text-bone-muted">
+                PLAN ACTUEL
+              </span>
+              <span className="text-bone font-semibold">Starter</span>
             </div>
-            <p className="text-white/50 text-sm">
-              Passe à Pro pour débloquer tous les groupes musculaires et exercices.
+            <p className="text-bone-muted text-sm">
+              Passe Pro pour débloquer les 9 groupes et tous les exercices.
             </p>
           </div>
           <Link
             href="/pricing"
-            className="flex-shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-accent-purple to-accent-cyan text-white font-bold text-sm hover:opacity-90"
+            className="flex-shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl btn-volt"
           >
             Voir les tarifs
-            <ArrowRight className="w-4 h-4" />
+            <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
       </div>

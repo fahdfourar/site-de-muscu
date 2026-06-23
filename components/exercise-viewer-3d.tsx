@@ -585,9 +585,9 @@ function getPoses(type: string): { poseA: Joints; poseB: Joints } {
 
 // ─── Animated character ───────────────────────────────────────────────────────
 
-const BODY_COLOR = "#A78BFA";
-const JOINT_COLOR = "#7C3AED";
-const ACTIVE_MUSCLE_COLOR = "#F97316";
+const BODY_COLOR = "#D6D6CF";
+const JOINT_COLOR = "#CDFF47";
+const ACTIVE_MUSCLE_COLOR = "#FF5436";
 
 function lerpJoints(a: Joints, b: Joints, t: number): Joints {
   const keys = Object.keys(a) as (keyof Joints)[];
@@ -678,8 +678,8 @@ function HoloFloor() {
     <Grid
       args={[6, 6]}
       position={[0, -0.01, 0]}
-      cellColor="#7C3AED"
-      sectionColor="#06B6D4"
+      cellColor="#26262B"
+      sectionColor="#5E7A12"
       cellThickness={0.5}
       sectionThickness={1}
       fadeDistance={8}
@@ -723,8 +723,8 @@ export default function ExerciseViewer3D({
           castShadow
           shadow-mapSize={[1024, 1024]}
         />
-        <pointLight position={[-3, 3, 0]} color="#7C3AED" intensity={8} />
-        <pointLight position={[3, 2, 0]} color="#06B6D4" intensity={5} />
+        <pointLight position={[-3, 3, 0]} color="#CDFF47" intensity={7} />
+        <pointLight position={[3, 2, 0]} color="#FFFFFF" intensity={4} />
 
         <HoloFloor />
 
@@ -744,9 +744,6 @@ export default function ExerciseViewer3D({
         />
       </Canvas>
 
-      <div className="absolute bottom-3 left-3 text-xs text-white/40 font-mono select-none pointer-events-none">
-        Clic + glisser pour tourner
-      </div>
     </div>
   );
 }

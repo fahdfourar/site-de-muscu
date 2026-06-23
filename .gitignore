@@ -3,3 +3,7 @@
 node_modules/
 .next/
 out/
+
+# one-off scripts with secrets
+scripts/
+next-env.d.ts

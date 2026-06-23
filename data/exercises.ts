@@ -33,8 +33,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "pectoraux",
     name: "Pectoraux",
     description: "Muscles de la poitrine",
-    color: "#7C3AED",
-    gradient: "from-purple-700 to-purple-500",
+    color: "#FF5436",
+    gradient: "from-orange-600 to-rose-500",
     icon: "chest",
     exercises: [
       {
@@ -116,8 +116,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "dos",
     name: "Dos",
     description: "Dorsaux, trapèzes, rhomboïdes",
-    color: "#06B6D4",
-    gradient: "from-cyan-600 to-cyan-400",
+    color: "#3DD6C4",
+    gradient: "from-teal-500 to-emerald-400",
     icon: "back",
     exercises: [
       {
@@ -198,8 +198,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "epaules",
     name: "Épaules",
     description: "Deltoïdes antérieur, médial, postérieur",
-    color: "#8B5CF6",
-    gradient: "from-violet-600 to-violet-400",
+    color: "#C8A2FF",
+    gradient: "from-violet-500 to-fuchsia-400",
     icon: "shoulders",
     exercises: [
       {
@@ -280,8 +280,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "biceps",
     name: "Biceps",
     description: "Biceps brachial, brachial",
-    color: "#F97316",
-    gradient: "from-orange-600 to-orange-400",
+    color: "#FFB13D",
+    gradient: "from-amber-500 to-orange-400",
     icon: "bicep",
     exercises: [
       {
@@ -361,8 +361,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "triceps",
     name: "Triceps",
     description: "Chef long, médial, latéral",
-    color: "#10B981",
-    gradient: "from-emerald-600 to-emerald-400",
+    color: "#7BE66B",
+    gradient: "from-green-500 to-lime-400",
     icon: "tricep",
     exercises: [
       {
@@ -442,8 +442,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "quadriceps",
     name: "Quadriceps",
     description: "Vaste médial, latéral, droit fémoral",
-    color: "#EC4899",
-    gradient: "from-pink-600 to-pink-400",
+    color: "#FF6FB5",
+    gradient: "from-pink-500 to-rose-400",
     icon: "quads",
     exercises: [
       {
@@ -525,8 +525,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "abdominaux",
     name: "Abdominaux",
     description: "Grand droit, obliques, transverse",
-    color: "#06B6D4",
-    gradient: "from-cyan-600 to-teal-400",
+    color: "#5BD0FF",
+    gradient: "from-sky-500 to-cyan-400",
     icon: "abs",
     exercises: [
       {
@@ -606,8 +606,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "fessiers",
     name: "Fessiers",
     description: "Grand, moyen et petit fessier",
-    color: "#F59E0B",
-    gradient: "from-amber-600 to-amber-400",
+    color: "#FFD23D",
+    gradient: "from-yellow-500 to-amber-400",
     icon: "glutes",
     exercises: [
       {
@@ -686,8 +686,8 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
     slug: "ischio-jambiers",
     name: "Ischio-jambiers",
     description: "Biceps fémoral, semi-tendineux",
-    color: "#EF4444",
-    gradient: "from-red-600 to-red-400",
+    color: "#5B8CFF",
+    gradient: "from-blue-500 to-indigo-400",
     icon: "hamstrings",
     exercises: [
       {
