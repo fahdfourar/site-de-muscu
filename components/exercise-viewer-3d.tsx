@@ -16,6 +16,7 @@ import type { Exercise } from "@/data/exercises";
 // ── Palette ──
 const LIMB = "#D6D6CF";
 const JOINT = "#CDFF47";
+const SKIN = "#C4C4BD"; // muscular matte body
 const METAL = "#3A3A42";
 const BAR = "#5A5A64";
 const PLATE = "#15151A";
@@ -83,6 +84,66 @@ function Tube({ a, b, r = 0.05, color = LIMB }: { a: THREE.Vector3; b: THREE.Vec
     </mesh>
   );
 }
+/** tapered limb segment — radius `rb` at a, `rt` at b (muscle volume) */
+function TaperedTube({ a, b, rt, rb, color = SKIN }: { a: THREE.Vector3; b: THREE.Vector3; rt: number; rb: number; color?: string }) {
+  const mid = useMemo(() => new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5), [a, b]);
+  const len = useMemo(() => a.distanceTo(b), [a, b]);
+  const quat = useMemo(() => {
+    const dir = new THREE.Vector3().subVectors(b, a).normalize();
+    return new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  }, [a, b]);
+  return (
+    <mesh position={mid} quaternion={quat} castShadow receiveShadow>
+      <cylinderGeometry args={[rt, rb, Math.max(len, 0.001), 18]} />
+      <meshStandardMaterial color={color} roughness={0.62} metalness={0.08} />
+    </mesh>
+  );
+}
+
+/** Muscular humanoid built from tapered volumes — broad chest, narrow waist. */
+function MuscularBody({ j }: { j: Joints }) {
+  const chest = j.hip.clone().lerp(j.neck, 0.62);
+  return (
+    <group>
+      {/* head + neck */}
+      <Ball pos={j.head} r={0.155} color={SKIN} />
+      <TaperedTube a={j.neck} b={j.head} rt={0.09} rb={0.085} />
+      {/* torso — V taper: wide chest, narrow waist */}
+      <TaperedTube a={j.hip} b={chest} rt={0.205} rb={0.155} />
+      <TaperedTube a={chest} b={j.neck} rt={0.135} rb={0.205} />
+      <Ball pos={j.hip} r={0.155} color={SKIN} />
+      <Ball pos={chest} r={0.2} color={SKIN} />
+      {/* deltoids */}
+      <Ball pos={j.shoulderL} r={0.115} color={SKIN} />
+      <Ball pos={j.shoulderR} r={0.115} color={SKIN} />
+      {/* upper arms */}
+      <TaperedTube a={j.shoulderL} b={j.elbowL} rt={0.072} rb={0.092} />
+      <TaperedTube a={j.shoulderR} b={j.elbowR} rt={0.072} rb={0.092} />
+      <Ball pos={j.elbowL} r={0.07} color={SKIN} />
+      <Ball pos={j.elbowR} r={0.07} color={SKIN} />
+      {/* forearms */}
+      <TaperedTube a={j.elbowL} b={j.wristL} rt={0.05} rb={0.072} />
+      <TaperedTube a={j.elbowR} b={j.wristR} rt={0.05} rb={0.072} />
+      <Ball pos={j.wristL} r={0.052} color={SKIN} />
+      <Ball pos={j.wristR} r={0.052} color={SKIN} />
+      {/* glutes / hips */}
+      <Ball pos={j.hipL} r={0.115} color={SKIN} />
+      <Ball pos={j.hipR} r={0.115} color={SKIN} />
+      {/* thighs */}
+      <TaperedTube a={j.hipL} b={j.kneeL} rt={0.095} rb={0.145} />
+      <TaperedTube a={j.hipR} b={j.kneeR} rt={0.095} rb={0.145} />
+      <Ball pos={j.kneeL} r={0.092} color={SKIN} />
+      <Ball pos={j.kneeR} r={0.092} color={SKIN} />
+      {/* calves */}
+      <TaperedTube a={j.kneeL} b={j.ankleL} rt={0.058} rb={0.098} />
+      <TaperedTube a={j.kneeR} b={j.ankleR} rt={0.058} rb={0.098} />
+      {/* feet */}
+      <Ball pos={j.ankleL} r={0.058} color={SKIN} />
+      <Ball pos={j.ankleR} r={0.058} color={SKIN} />
+    </group>
+  );
+}
+
 /** disc (weight plate) centred at p, axis along `axis` */
 function Plate({ p, axis, r = 0.17, color = PLATE }: { p: THREE.Vector3; axis: THREE.Vector3; r?: number; color?: string }) {
   const quat = useMemo(
@@ -529,16 +590,6 @@ function repBlend(p: number) {
   return 0;
 }
 
-const BONES: [string, string][] = [
-  ["neck", "head"],
-  ["shoulderL", "shoulderR"],
-  ["shoulderL", "elbowL"], ["elbowL", "wristL"],
-  ["shoulderR", "elbowR"], ["elbowR", "wristR"],
-  ["hip", "hipL"], ["hip", "hipR"],
-  ["hipL", "kneeL"], ["kneeL", "ankleL"],
-  ["hipR", "kneeR"], ["kneeR", "ankleR"],
-];
-
 /* ════════════════════════════════════════════════════════════
    FIGURE + held implements
    ════════════════════════════════════════════════════════════ */
@@ -568,24 +619,10 @@ function Figure({ type }: { type: string }) {
   });
 
   const j = joints;
-  const jointKeys = ["shoulderL", "shoulderR", "elbowL", "elbowR", "wristL", "wristR", "hipL", "hipR", "kneeL", "kneeR", "ankleL", "ankleR"];
 
   return (
     <group>
-      {/* torso volume — reads as a body, not just sticks */}
-      <Tube a={j.hip} b={j.neck} r={0.135} color={LIMB} />
-      <Ball pos={j.hip} r={0.14} color={LIMB} />
-      <Ball pos={j.neck} r={0.1} color={LIMB} />
-      {/* limbs */}
-      {BONES.map(([x, y]) => (
-        <Tube key={`${x}-${y}`} a={j[x]} b={j[y]} r={0.057} />
-      ))}
-      {/* head */}
-      <Ball pos={j.head} r={0.14} color={LIMB} />
-      {/* joints */}
-      {jointKeys.map((k) => (
-        <Ball key={k} pos={j[k]} r={0.062} color={JOINT} />
-      ))}
+      <MuscularBody j={j} />
       <HeldImplement type={type} j={j} />
     </group>
   );
