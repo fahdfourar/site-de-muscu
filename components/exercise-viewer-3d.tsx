@@ -109,13 +109,13 @@ function MuscularBody({ j }: { j: Joints }) {
       <Ball pos={j.head} r={0.155} color={SKIN} />
       <TaperedTube a={j.neck} b={j.head} rt={0.09} rb={0.085} />
       {/* torso — V taper: wide chest, narrow waist */}
-      <TaperedTube a={j.hip} b={chest} rt={0.205} rb={0.155} />
-      <TaperedTube a={chest} b={j.neck} rt={0.135} rb={0.205} />
-      <Ball pos={j.hip} r={0.155} color={SKIN} />
-      <Ball pos={chest} r={0.2} color={SKIN} />
+      <TaperedTube a={j.hip} b={chest} rt={0.175} rb={0.145} />
+      <TaperedTube a={chest} b={j.neck} rt={0.125} rb={0.175} />
+      <Ball pos={j.hip} r={0.14} color={SKIN} />
+      <Ball pos={chest} r={0.168} color={SKIN} />
       {/* deltoids */}
-      <Ball pos={j.shoulderL} r={0.115} color={SKIN} />
-      <Ball pos={j.shoulderR} r={0.115} color={SKIN} />
+      <Ball pos={j.shoulderL} r={0.108} color={SKIN} />
+      <Ball pos={j.shoulderR} r={0.108} color={SKIN} />
       {/* upper arms */}
       <TaperedTube a={j.shoulderL} b={j.elbowL} rt={0.072} rb={0.092} />
       <TaperedTube a={j.shoulderR} b={j.elbowR} rt={0.072} rb={0.092} />
@@ -145,7 +145,7 @@ function MuscularBody({ j }: { j: Joints }) {
 }
 
 /** disc (weight plate) centred at p, axis along `axis` */
-function Plate({ p, axis, r = 0.17, color = PLATE }: { p: THREE.Vector3; axis: THREE.Vector3; r?: number; color?: string }) {
+function Plate({ p, axis, r = 0.15, color = PLATE }: { p: THREE.Vector3; axis: THREE.Vector3; r?: number; color?: string }) {
   const quat = useMemo(
     () => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), axis.clone().normalize()),
     [axis]
@@ -246,10 +246,11 @@ function getDef(type: string): Def {
   switch (type) {
     /* ───── PECTORAUX ───── */
     case "bench-press":
+      // bar stays ABOVE the chest the whole way (no clipping into torso)
       return {
         stance: "lie",
-        a: clone(LIE, { elbowL: [-0.46, 0.78, -0.3], elbowR: [0.46, 0.78, -0.3], wristL: [-0.34, 1.28, -0.3], wristR: [0.34, 1.28, -0.3] }),
-        b: clone(LIE, { elbowL: [-0.56, 0.7, -0.34], elbowR: [0.56, 0.7, -0.34], wristL: [-0.34, 0.82, -0.34], wristR: [0.34, 0.82, -0.34] }),
+        a: clone(LIE, { elbowL: [-0.46, 0.82, -0.18], elbowR: [0.46, 0.82, -0.18], wristL: [-0.32, 1.34, -0.12], wristR: [0.32, 1.34, -0.12] }),
+        b: clone(LIE, { elbowL: [-0.58, 0.82, -0.22], elbowR: [0.58, 0.82, -0.22], wristL: [-0.32, 1.02, -0.16], wristR: [0.32, 1.02, -0.16] }),
       };
     case "push-up":
       return {
@@ -698,8 +699,8 @@ function HeldImplement({ type, j }: { type: string; j: Joints }) {
     return (
       <group position={back}>
         <Tube a={a} b={b} r={0.03} color={BAR} />
-        <Plate p={extend(j.shoulderR, j.shoulderL, -0.02)} axis={axis} r={0.19} />
-        <Plate p={extend(j.shoulderL, j.shoulderR, -0.02)} axis={axis} r={0.19} />
+        <Plate p={extend(j.shoulderR, j.shoulderL, -0.02)} axis={axis} r={0.165} />
+        <Plate p={extend(j.shoulderL, j.shoulderR, -0.02)} axis={axis} r={0.165} />
       </group>
     );
   }
@@ -710,8 +711,8 @@ function HeldImplement({ type, j }: { type: string; j: Joints }) {
     return (
       <group position={[0, 0.12, 0]}>
         <Tube a={a} b={b} r={0.03} color={BAR} />
-        <Plate p={extend(j.hipR, j.hipL, -0.02)} axis={axis} r={0.2} />
-        <Plate p={extend(j.hipL, j.hipR, -0.02)} axis={axis} r={0.2} />
+        <Plate p={extend(j.hipR, j.hipL, -0.02)} axis={axis} r={0.17} />
+        <Plate p={extend(j.hipL, j.hipR, -0.02)} axis={axis} r={0.17} />
       </group>
     );
   }
@@ -757,13 +758,13 @@ function Dumbbell({ at, hammer = false, vertical = false }: { at: THREE.Vector3;
     : hammer
     ? new THREE.Vector3(0, 0, 1)
     : new THREE.Vector3(1, 0, 0);
-  const e1 = at.clone().addScaledVector(axis, 0.13);
-  const e2 = at.clone().addScaledVector(axis, -0.13);
+  const e1 = at.clone().addScaledVector(axis, 0.12);
+  const e2 = at.clone().addScaledVector(axis, -0.12);
   return (
     <group>
-      <Tube a={e1} b={e2} r={0.022} color={BAR} />
-      <Plate p={at.clone().addScaledVector(axis, 0.13)} axis={axis} r={0.085} />
-      <Plate p={at.clone().addScaledVector(axis, -0.13)} axis={axis} r={0.085} />
+      <Tube a={e1} b={e2} r={0.02} color={BAR} />
+      <Plate p={at.clone().addScaledVector(axis, 0.12)} axis={axis} r={0.072} />
+      <Plate p={at.clone().addScaledVector(axis, -0.12)} axis={axis} r={0.072} />
     </group>
   );
 }
