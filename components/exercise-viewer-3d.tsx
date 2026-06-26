@@ -577,17 +577,45 @@ const LEGPRESS_EXT: Pose = clone(LEGPRESS_FLEX, {
 });
 
 /* ════════════════════════════════════════════════════════════
-   TIMING — ease with holds top & bottom (clear rep)
+   SKELETON — rigid bone lengths so limbs ROTATE (arc) instead of
+   stretching. Directions come from the pose interpolation; lengths
+   are locked to the canonical body → natural joint rotation.
    ════════════════════════════════════════════════════════════ */
-function easeInOut(x: number) {
-  return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const PARENT_ORDER: [string, string][] = [
+  ["hip", "neck"], ["neck", "head"],
+  ["neck", "shoulderL"], ["shoulderL", "elbowL"], ["elbowL", "wristL"],
+  ["neck", "shoulderR"], ["shoulderR", "elbowR"], ["elbowR", "wristR"],
+  ["hip", "hipL"], ["hipL", "kneeL"], ["kneeL", "ankleL"],
+  ["hip", "hipR"], ["hipR", "kneeR"], ["kneeR", "ankleR"],
+];
+const REST_LEN: Record<string, number> = (() => {
+  const m: Record<string, number> = {};
+  for (const [p, c] of PARENT_ORDER) m[`${p}>${c}`] = vec(STAND[p]).distanceTo(vec(STAND[c]));
+  return m;
+})();
+function constrainBones(J: Joints) {
+  for (const [p, c] of PARENT_ORDER) {
+    const dir = J[c].clone().sub(J[p]);
+    const len = dir.length() || 1e-6;
+    dir.multiplyScalar(REST_LEN[`${p}>${c}`] / len);
+    J[c] = J[p].clone().add(dir);
+  }
+  return J;
+}
+
+/* ── TIMING — realistic tempo: controlled lift, squeeze, slower lowering ── */
+function easeOut(x: number) {
+  return 1 - Math.pow(1 - x, 3);
+}
+function easeIn(x: number) {
+  return x * x * x;
 }
 function repBlend(p: number) {
-  if (p < 0.12) return 0;
-  if (p < 0.46) return easeInOut((p - 0.12) / 0.34);
-  if (p < 0.56) return 1;
-  if (p < 0.9) return 1 - easeInOut((p - 0.56) / 0.34);
-  return 0;
+  if (p < 0.06) return 0;                       // set
+  if (p < 0.4) return easeOut((p - 0.06) / 0.34); // concentric (lift) — snappy then decelerate
+  if (p < 0.52) return 1;                        // peak squeeze
+  if (p < 0.96) return 1 - easeIn((p - 0.52) / 0.44); // eccentric (lower) — slower, controlled
+  return 0;                                      // brief reset
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -600,22 +628,32 @@ function Figure({ type }: { type: string }) {
 
   useFrame((_, dt) => {
     t.current += dt;
-    const period = 4.6;
+    const period = 4.8;
     const p = (t.current % period) / period;
     const m = repBlend(p);
+
+    let jj: Joints;
     if (def.alt) {
-      // alternating: right arm offset by half a cycle
-      const pR = (p + 0.5) % 1;
-      const mR = repBlend(pR);
-      const baseL = lerpPose(def.a, def.b, m);
+      // alternating limbs: right arm offset half a cycle
+      const mR = repBlend((p + 0.5) % 1);
+      jj = lerpPose(def.a, def.b, m);
       const baseR = lerpPose(def.a, def.b, mR);
-      baseL.shoulderR = baseR.shoulderR;
-      baseL.elbowR = baseR.elbowR;
-      baseL.wristR = baseR.wristR;
-      setJoints(baseL);
+      jj.shoulderR = baseR.shoulderR;
+      jj.elbowR = baseR.elbowR;
+      jj.wristR = baseR.wristR;
     } else {
-      setJoints(lerpPose(def.a, def.b, m));
+      jj = lerpPose(def.a, def.b, m);
     }
+
+    // subtle breathing + effort sway through the whole body via the root
+    const breathe = Math.sin(t.current * 1.15) * 0.006;
+    jj.hip = jj.hip.clone();
+    jj.hip.y += breathe;
+    jj.hipL = jj.hipL.clone(); jj.hipL.y += breathe;
+    jj.hipR = jj.hipR.clone(); jj.hipR.y += breathe;
+
+    constrainBones(jj);
+    setJoints(jj);
   });
 
   const j = joints;
